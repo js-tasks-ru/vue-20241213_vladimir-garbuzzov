@@ -8,9 +8,6 @@ export default defineComponent({
     let x = ref(0)
     let y = ref(0)
 
-    onMounted(() => {
-
-    })
     /**
      * Обработчик клика по карте для установки координат метки
      * @param {MouseEvent} event
@@ -19,14 +16,6 @@ export default defineComponent({
       x.value = event.offsetX
       y.value = event.offsetY
     }
-
-    // Следим за X и Y для установки нового положения
-    watch([x, y], () => {
-      // Находим метку и изменяем её положение
-      const map = document.querySelector('.pin')
-      map.style.left = `${x.value}px`
-      map.style.top = `${y.value}px`
-    })
 
     return {
       handleClick,

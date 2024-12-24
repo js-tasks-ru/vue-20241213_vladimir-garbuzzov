@@ -13,15 +13,11 @@ export default defineComponent({
     }
 
     const nextMeetup = () => {
-      if ( 5 >= currentMeetupId.value) {
-        currentMeetupId.value++
-      }
+      currentMeetupId.value++
     }
 
     const prevMeetup = () => {
-      if (currentMeetupId.value > 1) {
-        currentMeetupId.value--
-      }
+      currentMeetupId.value--
     }
 
     onMounted( async () => {
@@ -106,13 +102,13 @@ export default defineComponent({
         <button class="button button--secondary" type="button" @click.prevent="nextMeetup" :disabled="currentMeetupId >= 5">Следующий</button>
       </div>
 
-      <template v-if="currentMeetup">
+      <div v-if="currentMeetup">
         <div class="meetup-selector__cover">
           <div class="meetup-cover">
             <h1 class="meetup-cover__title">{{ currentMeetup.title }}</h1>
           </div>
         </div>
-      </template>
+      </div>
 
 
     </div>
