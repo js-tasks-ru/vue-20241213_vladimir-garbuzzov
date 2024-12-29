@@ -1,9 +1,9 @@
-import {defineComponent, toRef, computed} from 'vue'
+import {defineComponent, toRef, computed, onMounted} from 'vue'
 import { WeatherConditionIcons } from './weather.service.ts'
 import WeatherAlert from './WeatherAlert.js'
 import WeatherDetailsItem from './WeatherDetailsItem.js'
 
-function isNight(dt, sunrise, sunset) {
+function isItNight(dt, sunrise, sunset) {
   return dt < sunrise || dt > sunset
 }
 
@@ -33,48 +33,42 @@ export default defineComponent({
   setup(props) {
     const weatherItem = toRef(() => props.weatherItem)
 
-    const { alert, geographic_name, current } = weatherItem.value
-
-    const currentWeatherItem = computed(() => {
-      return {
-        ...current,
-        temp: convertKelvinToCelsius(current.temp),
-        pressure: converthPatommHg(current.pressure),
-        isNight: isNight(current.dt, current.sunrise, current.sunset),
-      }
-    })
+    const temp = computed(() => convertKelvinToCelsius(weatherItem.value.current.temp))
+    const pressure = computed(() => converthPatommHg(weatherItem.value.current.pressure))
+    const isNight = computed(() => isItNight(weatherItem.value.current.dt, weatherItem.value.current.sunrise, weatherItem.value.current.sunset))
 
     return {
       WeatherConditionIcons,
-      alert,
-      currentWeatherItem,
-      geographic_name,
+      temp,
+      pressure,
+      isNight,
+      weatherItem
     }
   },
 
   template: `
-    <li class="weather-card" :class="{'weather-card--night': currentWeatherItem.isNight }">
-      <WeatherAlert v-if="alert">
-        {{ alert.sender_name }}: {{ alert.description }}
+    <li class="weather-card" :class="{'weather-card--night': isNight }">
+      <WeatherAlert v-if="weatherItem.alert">
+        {{ weatherItem.alert.sender_name }}: {{ weatherItem.alert.description }}
       </WeatherAlert>
       <div>
         <h2 class="weather-card__name">
-          {{ geographic_name }}
+          {{ weatherItem.geographic_name }}
         </h2>
         <div class="weather-card__time">
-          {{ currentWeatherItem.dt }}
+          {{ weatherItem.current.dt }}
         </div>
       </div>
       <div class="weather-conditions">
-        <div class="weather-conditions__icon" :title="currentWeatherItem.weather.description">{{ WeatherConditionIcons[currentWeatherItem.weather.id] }}</div>
-        <div class="weather-conditions__temp">{{ currentWeatherItem.temp }} °C</div>
+        <div class="weather-conditions__icon" :title="weatherItem.current.weather.description">{{ WeatherConditionIcons[weatherItem.current.weather.id] }}</div>
+        <div class="weather-conditions__temp">{{ temp }} °C</div>
       </div>
 
       <div class="weather-details">
-        <WeatherDetailsItem title="Давление, мм рт. ст." :value="currentWeatherItem.pressure" />
-        <WeatherDetailsItem title="Влажность, %" :value="currentWeatherItem.humidity" />
-        <WeatherDetailsItem title="Облачность, %" :value="currentWeatherItem.clouds" />
-        <WeatherDetailsItem title="Ветер, м/с" :value="currentWeatherItem.wind_speed" />
+        <WeatherDetailsItem title="Давление, мм рт. ст." :value="pressure" />
+        <WeatherDetailsItem title="Влажность, %" :value="weatherItem.current.humidity" />
+        <WeatherDetailsItem title="Облачность, %" :value="weatherItem.current.clouds" />
+        <WeatherDetailsItem title="Ветер, м/с" :value="weatherItem.current.wind_speed" />
       </div>
     </li>
   `,
