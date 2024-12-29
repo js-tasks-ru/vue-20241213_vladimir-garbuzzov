@@ -4,25 +4,7 @@ import './WeatherApp.css'
 
 import WeatherList from './WeatherList.js'
 
-function isNight(dt, sunrise, sunset) {
-  return dt < sunrise || dt > sunset
-}
-
-function convertKelvinToCelsius(kelvin) {
-  return (kelvin - 273.15).toFixed(1)
-}
-
-function converthPatommHg(hPa) {
-  return (hPa * 0.75).toFixed(0)
-}
-
-const weatherData = getWeatherData().map(item => {
-  const { current } = item
-  item.current.isNight = isNight(current.dt, current.sunrise, current.sunset)
-  item.current.temp = convertKelvinToCelsius(current.temp)
-  item.current.pressure = converthPatommHg(current.pressure)
-  return item
-})
+const weatherData = getWeatherData()
 
 export default defineComponent({
   name: 'WeatherApp',
